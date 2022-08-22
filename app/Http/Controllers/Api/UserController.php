@@ -40,6 +40,13 @@ class UserController extends Controller
         return response($response,201);
     }
 
+    public function verifyEmail(Request $request){
+        $user = $request->user();
+        $user->email_verified_at = now();
+        $user->save();
+        return response()->json(["message"=>"email is verified"]);
+    }
+
     public function login(Request $request)
     {
         $data = $request-> validate([

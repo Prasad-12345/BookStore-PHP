@@ -14,6 +14,7 @@ class Order extends Model
         'user_id',
         'address_id',
         'cart_id',
+        'cartId_json',
         'book_name',
         'book_author',
         'book_price',

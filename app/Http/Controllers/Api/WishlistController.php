@@ -13,10 +13,11 @@ class WishlistController extends Controller
     public function addBookToWishlist(Request $request){
         $request->validate([
             'cart_id'=>'required|integer',
-            'book_id' => 'required|integer'
+            // 'book_id' => 'required|integer'
         ]);
         $wishlist = new Wishlist();
-        $bookData = DB::table('cart')->where('book_id', $request->book_id)->first();
+        $cart = DB::table('cart')->where('id', $request->cart_id)->first();
+        $bookData = DB::table('cart')->where('book_id', $cart->book_id)->first();
         
         $getUser = $request->user()->id;
 
@@ -27,7 +28,7 @@ class WishlistController extends Controller
         }
         else{
             if($bookData){
-                $wishlist->book_id = $request->input('book_id');
+                $wishlist->book_id = $cart->book_id;
                 $wishlist->user_id = $getUser;
                 $wishlist->cart_id = $request->input('cart_id');
                 $wishlist->save();

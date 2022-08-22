@@ -32,13 +32,17 @@ class BookController extends Controller
         $book->price = $request->price;
         $book->quantity = $request->quantity;
 
-        if($request->hasFile('image')){
-            $file = $request->file('image');
-            $extension = $file->getClientOriginalExtension();
-            $fileName = time() . '.' . $extension;
-            $file->move('uploads/books', $fileName);
-            $book->image = $fileName;
-        }
+        $path = Storage::disk('s3')->put('images', $request->image);
+        $url = env('AWS_URL') . $path;
+        $book->image = $url;
+
+        // if($request->hasFile('image')){
+        //     $file = $request->file('image');
+        //     $extension = $file->getClientOriginalExtension();
+        //     $fileName = time() . '.' . $extension;
+        //     $file->move('uploads/books', $fileName);
+        //     $book->image = $fileName;
+        // }
 
         // if($request->hasFile('image')){
         //     $file = $request->file('image');

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\sendOrderDetails;
+use LengthException;
 
 class OrderController extends Controller
 {
@@ -19,28 +20,35 @@ class OrderController extends Controller
 
     public function placeOrder(Request $request){
         $request->validate([
-            'cart_id',
-            'address_id'
+            'cartId_json' => 'required',
+            'address_id' => 'required|integer'
         ]);
-
-        $getUser = $request->user();
-        $cart = DB::table('cart')->where('id', $request->cart_id)->first();
-
-        $book = $this->getBookById($cart->book_id);
-        $order = new Order();
-        $order->user_id = $getUser->id;
-        $order->cart_id = $request->input('cart_id');
-        $order->address_id = $request->input('address_id');
-        $order->book_name = $book->name;
-        $order->book_author = $book->author;
-        $order->book_price = $book->price;
-        $order->book_quantity = $cart->book_quantity;
-        $order->total_price = $cart->book_quantity * $book->price;
-        $randomCode = Str::random(10);
-        $order->order_id = $randomCode;
-        $order->save();
-
-        Mail::to($getUser->email)->send(new sendOrderDetails($getUser, $order, $book));
+        $cartId_json = $request->cartId_json;
+        $length = sizeof($cartId_json);
+        
+        // return $length;
+        for($i=0; $i < $length; $i++){
+            $getUser = $request->user();
+            $cart = DB::table('cart')->where('id', $cartId_json[$i])->first();
+    
+            $book = $this->getBookById($cart->book_id);
+            $order = new Order();
+            $order->user_id = $getUser->id;
+            $order->cartId_json = $cartId_json[$i];
+            $order->cart_id = $cartId_json[$i];
+            $order->address_id = $request->input('address_id');
+            $order->book_name = $book->name;
+            $order->book_author = $book->author;
+            $order->book_price = $book->price;
+            $order->book_quantity = $cart->book_quantity;
+            $order->total_price = $cart->book_quantity * $book->price;
+            $randomCode = Str::random(10);
+            $order->order_id = $randomCode;
+            $order->save();
+    
+            Mail::to($getUser->email)->send(new sendOrderDetails($getUser, $order, $book));
+        }
+   
         return response()->json(["message"=>"order placed successfully", "successStatus"=>200]);
     }
 
