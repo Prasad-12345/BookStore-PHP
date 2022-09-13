@@ -13,11 +13,13 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('orders');
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('address_id');
             $table->unsignedInteger('cart_id');
+            $table->json('cartId_json');
             $table->string('book_name');
             $table->string('book_author');
             $table->integer('book_price');
