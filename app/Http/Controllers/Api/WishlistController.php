@@ -7,6 +7,7 @@ use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class WishlistController extends Controller
 {
@@ -40,8 +41,18 @@ class WishlistController extends Controller
         }
     }
 
-    public function getAllBooksFromWishlists(){
-        $data = Wishlist::all();
+    public function getAllBooksFromWishlists(Request $request){
+        // $request->validate([
+        //     'user_id' => 'required|integer'
+        // ]);
+        // $userId = $request->user_id;
+        $data = Cache::remember('books',10, function(){
+            // $userId = $request->user()->id;
+            return DB::table('wishlists')->join('books', 'wishlists.book_id', '=', 'books.id')
+            ->select('books.id', 'books.name', 'books.author', 'books.description', 'books.price', 'wishlists.id')
+            ->get();
+            // return $wishlist;
+        });
         return $data;
     }
 
@@ -53,6 +64,9 @@ class WishlistController extends Controller
         $response = DB::table('wishlists')->where('id', $request->id)->delete();
         if($response){
             return response()->json(["message"=>"Book removed from wishlists", "sussessststus"=>200]);
+        }
+        else{
+            Log::channel('custom')->error("You entered invalid id");
         }
     }
 }

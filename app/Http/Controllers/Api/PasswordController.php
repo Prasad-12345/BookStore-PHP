@@ -17,22 +17,6 @@ use Illuminate\Support\Facades\DB;
 
 class PasswordController extends Controller
 {
-    public function resetPassword(Request $request){
-        $request->validate([
-            'userId' => 'required',
-            'email' => 'required',
-            'password' =>'required',
-            'newPassword' => 'required'
-        ]);
-        $result = Auth::attempt(['email' => $request->email, 'password' => $request->password]);
-        if($result){
-            User::where('id', $request->userId)->update(['password' => Hash::make($request->newPassword)]);
-            return response()->json(['message'=>"password updated successfully", 'status'=>200]);
-        }
-        else{
-            return response()->json(['message'=>"Check your old password", 'status'=>400]);
-        }
-    }
 
     public function forgotPassword(Request $request){
         $request->validate([
