@@ -26,16 +26,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:sanctum'])->group(function(){
+    Route::post('verifyEmail',[UserController::class,'verifyEmail']);
+
     Route::post('addBook',[BookController::class,'addBook']);
+    Route::get('showBooks',[BookController::class, 'showBooks']);
 
     Route::post('resetPassword',[PasswordController::class,'resetPassword']);
     Route::post('forgotPassword',[PasswordController::class,'forgotPassword']);
     Route::post('logout',[UserController::class,'logout']);
+
     Route::post('addBookTocart',[CartController::class, 'addBookTocart']);
     Route::post('deleteBookFromCart',[CartController::class, 'deleteBookFromCart']);
     Route::get('getAllBooks',[CartController::class, 'getAllBooks']);
     Route::post('updateBookInCart',[CartController::class, 'updateBookInCart']);
     Route::post('updateQuantityInCart',[CartController::class, 'updateQuantityInCart']);
+    Route::post('incrementQuantityInCart',[CartController::class, 'incrementQuantityInCart']);
+    Route::post('decrementQuantityInCart',[CartController::class, 'decrementQuantityInCart']);
 
     Route::post('addBookToWishlist', [WishlistController::class, 'addBookToWishlist']);
     Route::get('getAllBooksFromWishlists', [WishlistController::class, 'getAllBooksFromWishlists']);
@@ -61,7 +67,7 @@ Route::post('reset', [PasswordController::class, 'reset']);
 // Route::post('addBook',[BookController::class,'addBook']);
 Route::post('updateBook',[BookController::class,'updateBook']);
 // Route::get('showBooks',[BookController::class,'showBooks']);
-Route::get('showBooks',[BookController::class, 'showBooks']);
+
 Route::post('delete',[BookController::class,'delete']);
 Route::get('searchBook', [BookController::class, 'searchBook']);
 Route::get('sortOnPriceLowToHigh', [BookController::class, 'sortOnPriceLowToHigh']);
